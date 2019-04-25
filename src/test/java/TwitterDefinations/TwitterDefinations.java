@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.json.JSONObject;
-import org.junit.Assert;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
