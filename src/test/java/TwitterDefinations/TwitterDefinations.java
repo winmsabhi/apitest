@@ -2,10 +2,22 @@ package TwitterDefinations;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
-import org.json.JSONObject;
+import javax.swing.text.html.HTMLDocument.Iterator;
+
+import org.json.simple.*;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.google.gson.JsonObject;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
@@ -13,6 +25,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.authentication.OAuthSignature;
+import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -25,6 +40,13 @@ public class TwitterDefinations {
 	//private JsonConversionUtil jsonConversionUtil;
 	private JSONObject responseJsonObject;
 	private Properties prop = new Properties();
+	private Integer followers_count, friends_count;
+	private String screen_name; 
+	private ArrayList<String> tweets;
+	private Map<String, String>  retweetCount = new HashMap<String, String>();
+	private Map.Entry<Integer, Integer>  maxEntry = null;
+	private Map.Entry<String, String> maxRetweet = null;
+	private JSONObject jsonObject ;
 
 	@Given("^pass \"([^\"]*)\" and \"([^\"]*)\" to user_timeline api$")
 	public void creatingTheApi(String arg1,String arg2) throws Throwable {
@@ -39,11 +61,49 @@ public class TwitterDefinations {
 		 url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name="+arg1+"&count="+arg2;
 	}
 
-	@When("^Hit user_timeline api$")
-	public void hit_user_timeline() throws Throwable {		
+	@When("^Hit user_timeline api and get max Retweeted tweet \"([^\"]*)\" among retrieved tweets$")
+	public void hit_user_timeline(String tagValue) throws Throwable {	
 		RequestSpecification httpRequest = RestAssured.given();
+		RestAssured.defaultParser = Parser.JSON;
 		httpRequest.auth().oauth(consumerKey,consumerSecret,accessToken,secretToken,OAuthSignature.HEADER);
+		httpRequest.contentType(ContentType.JSON);
 		response = httpRequest.get(url);
+		maxRetweet = findMaxValue(response, tagValue);
+		
+
+	}
+
+	private Map.Entry<String, String> findMaxValue(Response response, String tagValue) throws ParseException {
+		JSONParser parser = new JSONParser();
+		JSONArray obj = (JSONArray) parser.parse(response.asString());
+		
+		for(int i =0; i<obj.size();i++)
+		{
+			jsonObject = (JSONObject) obj.get(i);
+			retweetCount.put(jsonObject.get("id").toString(), jsonObject.get(tagValue).toString());
+		}
+
+		 Map.Entry<String, String> maxEntry = null;
+
+		    for (Map.Entry<String, String> entry : retweetCount.entrySet()) {
+
+		        if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue().toString()) > 0) {
+		            maxEntry = entry;
+		        }
+		    }
+		    
+		    System.out.println("MaxValue of "+ tagValue + " is" + maxEntry.getValue());
+		    System.out.println("The tweet object is \n" );
+		    for(int i =0; i<obj.size();i++)
+			{
+				jsonObject = (JSONObject) obj.get(i);
+				if(jsonObject.get("id").toString().equalsIgnoreCase(maxEntry.getKey()))
+				{
+				System.out.println(jsonObject.toString());
+				break;
+				}
+			}
+		    return maxEntry;
 	}
 
 
@@ -65,10 +125,19 @@ public class TwitterDefinations {
 		RequestSpecification httpRequest = RestAssured.given();
 		httpRequest.auth().oauth(consumerKey,consumerSecret,accessToken,secretToken,OAuthSignature.HEADER);
 		response = httpRequest.get(url);
+		
+		JsonPath x = new JsonPath(response.asString());
+		 followers_count = x.get("followers_count");
+		 friends_count = x.get("friends_count");
+		 screen_name = x.get("screen_name");
+		
+		System.out.println("Followers Count is " + followers_count);
+		System.out.println("Followers Count is " + friends_count);
+		System.out.println("Followers Count is " + friends_count);
 	}
 	
 	@Then("^Verify the api response$")
-	public void verify_WeatherData_Reponse() throws Throwable {		
+	public void verifyReponse() throws Throwable {		
 		System.out.println(response.asString());
 	}
 
