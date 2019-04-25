@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -39,10 +40,37 @@ public class Twittter {
 				"STeP-IN Forum (@stepin_forum) | Twitter")) {
 			List<WebElement> tweets = CommonMethods.findElements("xpath",
 					".//*[@id='stream-items-id']/li");
+			Actions action = new Actions(driver);
+			
 			while (tweets.size() < 50) {
 				System.out.println("Total tweets on this page are : "
 						+ tweets.size());
-				js.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				action.sendKeys(Keys.PAGE_DOWN).build().perform();
+				
+				
 				tweets = CommonMethods.findElements("xpath",
 						".//*[@id='stream-items-id']/li");
 			}

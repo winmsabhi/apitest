@@ -1182,6 +1182,7 @@ public class CommonMethods {
 				caps.setCapability("os_version", "10");
 				
 			}
+			caps.setJavascriptEnabled(true);
 			browseStackURL = new java.net.URL(URL);
 		} catch (Throwable t) {
 			// TODO: handle exception

@@ -61,7 +61,7 @@ public class TwitterDefinations {
 		 url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name="+arg1+"&count="+arg2;
 	}
 
-	@When("^Hit user_timeline api and get max Retweeted tweet \"([^\"]*)\" among retrieved tweets$")
+	@When("^Hit user_timeline api and get max \"([^\"]*)\" tweet among retrieved tweets$")
 	public void hit_user_timeline(String tagValue) throws Throwable {	
 		RequestSpecification httpRequest = RestAssured.given();
 		RestAssured.defaultParser = Parser.JSON;
@@ -80,7 +80,7 @@ public class TwitterDefinations {
 		for(int i =0; i<obj.size();i++)
 		{
 			jsonObject = (JSONObject) obj.get(i);
-			retweetCount.put(jsonObject.get("id").toString(), jsonObject.get(tagValue).toString());
+			retweetCount.put(jsonObject.get("id").toString(), (String) (jsonObject.get(tagValue)==null?"NULL":jsonObject.get(tagValue).toString()));
 		}
 
 		 Map.Entry<String, String> maxEntry = null;
@@ -139,6 +139,17 @@ public class TwitterDefinations {
 	@Then("^Verify the api response$")
 	public void verifyReponse() throws Throwable {		
 		System.out.println(response.asString());
+	}
+	
+	@Then("^The hashtags are following$")
+	public void getHashtagWithCount () {
+		
+		for(String st : response.toString().split(" ")){
+		    if(st.startsWith("@")){
+		        System.out.println(st);
+		    }
+		}
+		
 	}
 
 
