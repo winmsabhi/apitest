@@ -66,7 +66,7 @@ public class TwitterDefinations {
 		accessToken = prop.getProperty("accessToken");
 		secretToken = prop.getProperty("secretToken");
 		
-		 url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name="+arg1+"&count="+arg2;
+		 url = prop.getProperty("user_timeline")+arg1+"&count="+arg2;
 		 
 		 scenerio.write("User timeline URL: "+url);
 	}
@@ -130,7 +130,7 @@ public class TwitterDefinations {
 		accessToken = prop.getProperty("accessToken");
 		secretToken = prop.getProperty("secretToken");
 		
-		 url = "https://api.twitter.com/1.1/users/show.json?screen_name="+arg1;
+		 url = prop.getProperty("show_user")+arg1;
 		 scenerio.write("User show URL: "+url);
 	}
 
