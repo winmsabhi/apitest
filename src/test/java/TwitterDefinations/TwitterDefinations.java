@@ -40,13 +40,34 @@ public class TwitterDefinations {
 	}
 
 	@When("^Hit user_timeline api$")
-	public void hit_WeatherData_Api() throws Throwable {		
+	public void hit_user_timeline() throws Throwable {		
 		RequestSpecification httpRequest = RestAssured.given();
 		httpRequest.auth().oauth(consumerKey,consumerSecret,accessToken,secretToken,OAuthSignature.HEADER);
 		response = httpRequest.get(url);
 	}
 
-	@Then("^Verify the user_timeline api response$")
+
+	@Given("^pass \"([^\"]*)\" to users_show api$")
+	public void creatingUSerShowApi(String arg1) throws Throwable {
+		InputStream input = new FileInputStream("src/test/resources/config/config.properties");
+		prop.load(input);
+		
+		consumerKey = prop.getProperty("consumerKey");
+		consumerSecret = prop.getProperty("consumerSecret");
+		accessToken = prop.getProperty("accessToken");
+		secretToken = prop.getProperty("secretToken");
+		
+		 url = "https://api.twitter.com/1.1/users/show.json?screen_name="+arg1;
+	}
+
+	@When("^Hit users_show api$")
+	public void hit_usershow_Api() throws Throwable {		
+		RequestSpecification httpRequest = RestAssured.given();
+		httpRequest.auth().oauth(consumerKey,consumerSecret,accessToken,secretToken,OAuthSignature.HEADER);
+		response = httpRequest.get(url);
+	}
+	
+	@Then("^Verify the api response$")
 	public void verify_WeatherData_Reponse() throws Throwable {		
 		System.out.println(response.asString());
 	}
