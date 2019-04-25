@@ -20,6 +20,8 @@ import org.json.simple.parser.ParseException;
 import com.google.gson.JsonObject;
 
 import cucumber.api.DataTable;
+import cucumber.api.Scenario;
+import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -45,8 +47,14 @@ public class TwitterDefinations {
 	private ArrayList<String> tweets;
 	private Map<String, String>  retweetCount = new HashMap<String, String>();
 	private Map.Entry<Integer, Integer>  maxEntry = null;
-	private Map.Entry<String, String> maxRetweet = null;
-	private JSONObject jsonObject ;
+	private JSONObject jsonObject, maxRetweet;
+	private Scenario scenerio= null;
+	
+	@Before
+	public void setScenerios(Scenario scenerio)
+	{
+		this.scenerio = scenerio;
+	}
 
 	@Given("^pass \"([^\"]*)\" and \"([^\"]*)\" to user_timeline api$")
 	public void creatingTheApi(String arg1,String arg2) throws Throwable {
@@ -58,7 +66,9 @@ public class TwitterDefinations {
 		accessToken = prop.getProperty("accessToken");
 		secretToken = prop.getProperty("secretToken");
 		
-		 url = "https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name="+arg1+"&count="+arg2;
+		 url = prop.getProperty("user_timeline")+arg1+"&count="+arg2;
+		 
+		 scenerio.write("User timeline URL: "+url);
 	}
 
 	@When("^Hit user_timeline api and get max \"([^\"]*)\" tweet among retrieved tweets$")
@@ -69,11 +79,15 @@ public class TwitterDefinations {
 		httpRequest.contentType(ContentType.JSON);
 		response = httpRequest.get(url);
 		maxRetweet = findMaxValue(response, tagValue);
-		
-
+	}
+	
+	@Then("^Verify the user_timeline api response$")
+	public void verifyuser_timelineReponse() throws Throwable {		
+		scenerio.write("Twitter ID for max retweets count: "+maxRetweet.get("id"));
+		scenerio.write("Tweet Text: "+maxRetweet.get("text"));	
 	}
 
-	private Map.Entry<String, String> findMaxValue(Response response, String tagValue) throws ParseException {
+	private JSONObject findMaxValue(Response response, String tagValue) throws ParseException {
 		JSONParser parser = new JSONParser();
 		JSONArray obj = (JSONArray) parser.parse(response.asString());
 		
@@ -103,9 +117,8 @@ public class TwitterDefinations {
 				break;
 				}
 			}
-		    return maxEntry;
+		    return jsonObject;
 	}
-
 
 	@Given("^pass \"([^\"]*)\" to users_show api$")
 	public void creatingUSerShowApi(String arg1) throws Throwable {
@@ -117,7 +130,8 @@ public class TwitterDefinations {
 		accessToken = prop.getProperty("accessToken");
 		secretToken = prop.getProperty("secretToken");
 		
-		 url = "https://api.twitter.com/1.1/users/show.json?screen_name="+arg1;
+		 url = prop.getProperty("show_user")+arg1;
+		 scenerio.write("User show URL: "+url);
 	}
 
 	@When("^Hit users_show api$")
@@ -130,15 +144,13 @@ public class TwitterDefinations {
 		 followers_count = x.get("followers_count");
 		 friends_count = x.get("friends_count");
 		 screen_name = x.get("screen_name");
-		
-		System.out.println("Followers Count is " + followers_count);
-		System.out.println("Followers Count is " + friends_count);
-		System.out.println("Followers Count is " + friends_count);
 	}
 	
-	@Then("^Verify the api response$")
-	public void verifyReponse() throws Throwable {		
-		System.out.println(response.asString());
+	@Then("^Verify the users_show api response$")
+	public void verifyReponse() throws Throwable {	
+		scenerio.write("Followers: "+followers_count);
+		scenerio.write("Following: "+friends_count);
+		scenerio.write("Sceeen Name: "+screen_name);
 	}
 	
 	@Then("^The hashtags are following$")
