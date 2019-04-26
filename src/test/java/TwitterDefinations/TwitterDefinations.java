@@ -85,6 +85,7 @@ public class TwitterDefinations {
 	public void verifyuser_timelineReponse() throws Throwable {		
 		scenerio.write("Twitter ID for max retweets count: "+maxRetweet.get("id"));
 		scenerio.write("Tweet Text: "+maxRetweet.get("text"));	
+		scenerio.write("ReTweet Count: "+maxRetweet.get("retweet_count"));
 	}
 
 	private JSONObject findMaxValue(Response response, String tagValue) throws ParseException {
